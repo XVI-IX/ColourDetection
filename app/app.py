@@ -15,6 +15,19 @@ def get_image(image_path):
 def get_hex(color):
   return f"#{int(color[0]):02x}{int(color[1]):02x}{int(color[2]):02x}"
 
+st.set_page_config(
+  page_title="Colour Detector",
+  layout="wide"
+)
+
+hide_default_format = """
+      <style>
+      #MainMenu {visibility: hidden; }
+      footer {visibility: hidden;}
+      </style>
+      """
+st.markdown(hide_default_format, unsafe_allow_html=True)
+
 @st.cache
 def get_colors(path="https://raw.githubusercontent.com/codebrainz/color-names/master/output/colors.csv"):
   df = pd.read_csv(path, names=["color_name", "hex", "r", "g", "b"])
@@ -24,38 +37,40 @@ data = get_colors()
 
 st.title("Colour Detector")
 
-image = st.file_uploader("image", type=['png', 'jpg'])
+image = st.file_uploader("Upload image", type=['png', 'jpg'])
 
 if image:
-  st.image(image)
-  image_arr = get_image(image)
+  left, right = st.columns(2)
 
-  number_of_colours = st.slider(
-    "How many colors should be extracted?", 0, 5, 3)
+  with left:
+    st.image(image)
+    image_arr = get_image(image)
 
-  mod_image = image_arr.reshape(
-    image_arr.shape[0] * image_arr.shape[1], image_arr.shape[-1]
-    )
+    number_of_colours = st.slider(
+      "How many colors should be extracted?", 0, 5, 3)
 
-  clf = KMeans(n_clusters = number_of_colours)
+    mod_image = image_arr.reshape(
+      image_arr.shape[0] * image_arr.shape[1], image_arr.shape[-1]
+      )
 
-  with st.spinner("Detecting Colors..."):
-    labels = clf.fit_predict(mod_image)
-    st.balloons()
-  labels = Counter(labels)
+    clf = KMeans(n_clusters = number_of_colours)
 
-  colors = clf.cluster_centers_
-  hex = [get_hex(colors[i]) for i in labels]
-  # hex
+    with st.spinner("Detecting Colors..."):
+      labels = clf.fit_predict(mod_image)
+    labels = Counter(labels)
 
-  for color in hex:
-    string = """
-        <div class="color" style="background-color:{};height:60px;width:60px;margin:25px;border-radius:6px;border:black 3px">
-        </div>""".format(color)
+    colors = clf.cluster_centers_
+    hex = [get_hex(colors[i]) for i in labels]
 
-    st.markdown(string, unsafe_allow_html=True)
+  with right:
+    for color in hex:
+      string = """
+          <div class="color" style="background-color:{};height:60px;width:60px;margin:25px;border-radius:6px;border:black 3px">
+          </div>""".format(color)
 
-    if color in data['hex']:
-      st.code(f"{color}: {data[data['hex'] == color]['color_name']}")
-    else:
-      st.code(color)
+      st.markdown(string, unsafe_allow_html=True)
+
+      if color in data['hex']:
+        st.code(f"{color}: {data[data['hex'] == color]['color_name']}")
+      else:
+        st.code(color)
