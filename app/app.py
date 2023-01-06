@@ -53,6 +53,8 @@ if image:
       image_arr.shape[0] * image_arr.shape[1], image_arr.shape[-1]
       )
 
+
+  with right:
     clf = KMeans(n_clusters = number_of_colours)
 
     with st.spinner("Detecting Colors..."):
@@ -61,8 +63,6 @@ if image:
 
     colors = clf.cluster_centers_
     hex = [get_hex(colors[i]) for i in labels]
-
-  with right:
     for color in hex:
       string = """
           <div class="color" style="background-color:{};height:60px;width:60px;margin:25px;border-radius:6px;border:black 3px">
