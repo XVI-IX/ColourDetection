@@ -26,7 +26,7 @@ hide_default_format = """
       footer {visibility: hidden;}
       </style>
       """
-# st.markdown(hide_default_format, unsafe_allow_html=True)
+st.markdown(hide_default_format, unsafe_allow_html=True)
 
 @st.cache
 def get_colors(path="https://raw.githubusercontent.com/codebrainz/color-names/master/output/colors.csv"):
