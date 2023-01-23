@@ -47,7 +47,7 @@ if image:
     image_arr = get_image(image)
 
     number_of_colours = st.slider(
-      "How many colors should be extracted?", 0, 5, 3)
+      "How many colors should be extracted?", 0, 7, 5)
 
     mod_image = image_arr.reshape(
       image_arr.shape[0] * image_arr.shape[1], image_arr.shape[-1]
